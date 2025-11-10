@@ -29,6 +29,14 @@
                 <label for="password">Senha</label>
                 <input type="password" id="password" required>
             </div>
+            <div>
+                <label for="cpf">Digite o CPF</label>
+                <input type="number" id="cpf" required>
+            </div>
+            <div>
+                <label for="dinheiro_na_nonta">Digite a quantidade de dinheiro na conta em reais</label>
+                <input type="number" id="dinheiro_na_conta" required>
+            </div>
             <button type="submit">Cadastrar</button>
         </form>
         <p>Já tem uma conta? <a href="login.html">Faça login</a></p>
@@ -40,11 +48,15 @@
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const cpf = document.getElementById('cpf').value;
+            const dinheiro = document.getElementById('dinheiro_na_conta').value;
 
             // CRIA o objeto do usuário
             const user = {
                 username: username,
-                password: password // (LEMBRETE: NUNCA FAÇA ISSO EM PROJETOS REAIS!)
+                password: password, // (LEMBRETE: NUNCA FAÇA ISSO EM PROJETOS REAIS!)
+                cpf: cpf,
+                dinheiro: dinheiro
             };
 
             // Salva o usuário no localStorage
