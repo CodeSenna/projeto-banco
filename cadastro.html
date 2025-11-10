@@ -8,7 +8,7 @@
     <style>
         /* Estilos simples para centralizar */
         body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f9fafb; }
-        .form-container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 350px; }
+        .form-container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
         .form-container h2 { text-align: center; margin-bottom: 20px; }
         .form-container form div { margin-bottom: 15px; }
         .form-container label { display: block; margin-bottom: 5px; font-weight: 500; }
@@ -31,11 +31,11 @@
             </div>
             <div>
                 <label for="cpf">Digite o CPF</label>
-                <input type="number" id="cpf" required>
+                <input type="text" id="cpf" placeholder="123.456.789-00" required>
             </div>
             <div>
-                <label for="dinheiro_na_nonta">Digite a quantidade de dinheiro na conta em reais</label>
-                <input type="number" id="dinheiro_na_conta" required>
+                <label for="dinheiro_na_conta">Depósito Inicial (R$)</label>
+                <input type="number" id="dinheiro_na_conta" min="0" step="0.01" placeholder="0.00" required>
             </div>
             <button type="submit">Cadastrar</button>
         </form>
@@ -44,28 +44,55 @@
 
     <script>
         document.getElementById('register-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o envio do formulário
+            event.preventDefault(); 
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const cpf = document.getElementById('cpf').value;
-            const dinheiro = document.getElementById('dinheiro_na_conta').value;
+            const initialDeposit = parseFloat(document.getElementById('dinheiro_na_conta').value);
 
-            // CRIA o objeto do usuário
-            const user = {
-                username: username,
-                password: password, // (LEMBRETE: NUNCA FAÇA ISSO EM PROJETOS REAIS!)
-                cpf: cpf,
-                dinheiro: dinheiro
+            // Chave única para cada usuário (baseada no email)
+            const dataKey = 'eWalletData_' + username;
+            
+            // 1. Verifica se o usuário já existe
+            if (localStorage.getItem(dataKey)) {
+                alert('Este e-mail já está cadastrado.');
+                return;
+            }
+
+            // 2. Cria a "Conta Principal"
+            const initialAccountId = Date.now();
+            const initialAccount = {
+                id: initialAccountId,
+                name: "Conta Principal"
             };
 
-            // Salva o usuário no localStorage
-            // Usamos JSON.stringify para converter o objeto em texto
-            localStorage.setItem('eWalletUser', JSON.stringify(user));
+            // 3. Cria a primeira transação (o depósito inicial)
+            const initialTransaction = {
+                id: Date.now() + 1,
+                accountId: initialAccountId,
+                type: "credit",
+                date: new Date().toISOString().split('T')[0], // Data de hoje
+                details: "Depósito Inicial",
+                amount: initialDeposit
+            };
+
+            // 4. Cria o objeto de dados COMPLETO do usuário
+            const userData = {
+                login: {
+                    username: username,
+                    password: password, 
+                    cpf: cpf
+                },
+                accounts: [ initialAccount ], // Adiciona a conta principal
+                transactions: [ initialTransaction ] // Adiciona a transação inicial
+            };
+
+            // 5. Salva tudo em uma única chave no localStorage
+            localStorage.setItem(dataKey, JSON.stringify(userData));
 
             alert('Cadastro realizado com sucesso! Você será redirecionado para o login.');
             
-            // Redireciona para o login
             window.location.href = 'login.html';
         });
     </script>

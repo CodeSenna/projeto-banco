@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - E-Wallet</title>
+    
+    <script>
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        if (isLoggedIn !== 'true') {
+            alert('Você precisa fazer login para acessar esta página!');
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ==================== ESTILOS GLOBAIS (Base) ==================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; display: flex; min-height: 100vh; background-color: #f4f7f6; margin: 0; padding: 0; }
+        .btn-primary { background-color: #2500f9; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .btn-primary:hover { background-color: #1a00b0; }
+        /* ==================== Sidebar (Menu Lateral) ==================== */
+        .sidebar { width: 250px; background-color: #2500f9; color: #fff; padding: 20px 0; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 2px 0 10px rgba(0,0,0,0.1); transition: width 0.3s ease; }
+        .sidebar .logo-container { text-align: center; margin-bottom: 30px; }
+        .sidebar .logo-container img { width: 60px; height: 60px; border-radius: 50%; background-color: #fff; padding: 5px; }
+        .sidebar nav ul { list-style: none; }
+        .sidebar nav ul li a { display: flex; align-items: center; padding: 15px 25px; color: #d1d5db; text-decoration: none; font-weight: 500; transition: background-color 0.3s, color 0.3s; white-space: nowrap; }
+        .sidebar nav ul li a i { margin-right: 15px; font-size: 1.2rem; min-width: 20px; }
+        .sidebar nav ul li a:hover,
+        .sidebar nav ul li.active a { background-color: rgba(255, 255, 255, 0.1); color: #fff; border-left: 5px solid #fff; padding-left: 20px; }
+        .sidebar .logout-section { padding: 20px 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 20px; }
+        .sidebar .logout-section button { width: 100%; padding: 12px 0; background-color: #fff; color: #2500f9; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, color 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; white-space: nowrap; }
+        .sidebar .logout-section button:hover { background-color: #f0f0f0; }
+        /* ==================== Conteúdo Principal ==================== */
+        .main-content { flex-grow: 1; padding: 40px; background-color: #f4f7f6; overflow-x: auto; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .dashboard-header h1 { font-size: 2.2rem; color: #333; margin-bottom: 5px; }
+        .dashboard-header p { font-size: 1.1rem; color: #666; }
+        /* --- Seção de Saldo --- */
+        .account-balance-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .balance-card { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .balance-card h3 { font-size: 1.2rem; color: #555; margin-bottom: 15px; }
+        .balance-card .amount { font-size: 2.2rem; font-weight: 700; color: #333; }
+        .balance-card.add-new { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 2px dashed #ccc; color: #999; cursor: pointer; transition: border-color 0.3s, color 0.3s; min-height: 150px; }
+        .balance-card.add-new:hover { border-color: #2500f9; color: #2500f9; }
+        .balance-card.add-new .icon-plus { font-size: 3rem; margin-bottom: 10px; }
+        /* --- Seção de Transações --- */
+        .transactions-section { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .transactions-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .transactions-header h2 { font-size: 1.8rem; color: #333; }
+        .transactions-header .filter-group { display: flex; align-items: center; gap: 10px; }
+        .transactions-header select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95rem; background-color: #fff; }
+        /* --- Tabela de Transações --- */
+        .transactions-table-container { overflow-x: auto; }
+        .transactions-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; min-width: 600px; }
+        .transactions-table th,
+        .transactions-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .transactions-table th { background-color: #f9f9f9; color: #555; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
+        .transactions-table tbody tr:last-child td { border-bottom: none; }
+        .transactions-table .type-tag { padding: 5px 10px; border-radius: 5px; font-size: 0.85rem; font-weight: bold; white-space: nowrap; }
+        .transactions-table .type-tag.debit { background-color: #ffe0e6; color: #e74c3c; }
+        .transactions-table .type-tag.credit { background-color: #e6ffee; color: #27ae60; }
+        
+        /* ==================== ESTILOS DO MODAL ==================== */
+        
+        /* ESTA É A REGRA QUE ESCONDE O MODAL */
+        .modal-hidden {
+            display: none; 
+        }
+        
+        #modal-container {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #333;
+        }
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+        }
+
+        /* --- Formulário do Modal --- */
+        #transaction-form .form-group {
+            margin-bottom: 20px;
+        }
+        #transaction-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        #transaction-form input[type="text"],
+        #transaction-form input[type="number"],
+        #transaction-form input[type="date"],
+        #transaction-form select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        #transaction-form .btn-primary {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        /* ==================== Responsividade ==================== */
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; }
+            .sidebar .logo-container { padding: 0 10px; }
+            .sidebar .logo-container img { width: 40px; height: 40px; }
+            .sidebar nav ul li a { justify-content: center; padding: 15px 10px; }
+            .sidebar nav ul li a span { display: none; }
+            .sidebar nav ul li a i { margin-right: 0; }
+            .sidebar nav ul li.active a { border-left: 3px solid #fff; padding-left: 7px; }
+            .sidebar .logout-section { padding: 20px 10px; }
+            .sidebar .logout-section button span { display: none; }
+            .sidebar .logout-section button i { margin-right: 0; }
+            .main-content { padding: 20px; }
+            .dashboard-header h1 { font-size: 1.8rem; }
+            .dashboard-header p { font-size: 1rem; }
+        }
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; justify-content: space-around; padding: 10px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; }
+            .sidebar .logo-container { display: none; }
+            .sidebar nav { width: 100%; }
+            .sidebar nav ul { display: flex; justify-content: space-around; width: 100%; }
+            .sidebar nav ul li a { flex-direction: column; padding: 8px 5px; border-left: none; border-bottom: 3px solid transparent; }
+             .sidebar nav ul li a:hover,
+             .sidebar nav ul li.active a { border-left: none; border-bottom: 3px solid #fff; background-color: transparent; padding-left: 5px; }
+            .sidebar nav ul li a span { display: block; font-size: 0.75rem; margin-top: 5px; }
+            .sidebar nav ul li a i { margin-right: 0; font-size: 1.1rem; }
+            .sidebar .logout-section { display: none; }
+            .main-content { padding: 20px; }
+            .transactions-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="logo-container">
+                <img src="placeholder-logo.png" alt="Logo E-Wallet">
+            </div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-chart-line"></i> <span>Visão Geral</span></a></li>
+                    <li><a href="#"><i class="fas fa-wallet"></i> <span>Contas</span></a></li>
+                    <li><a href="#"><i class="fas fa-exchange-alt"></i> <span>Transferências</span></a></li>
+                    <li><a href="#"><i class="fas fa-file-alt"></i> <span>Extratos</span></a></li>
+                    <li><a href="#"><i class="fas fa-credit-card"></i> <span>Cartões</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="#"><i class="fas fa-user-circle"></i> <span>Perfil</span></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="logout-section">
+            <button id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="dashboard-header">
+            <div>
+                <h1>Bom dia, <span id="user-name">Usuário</span></h1>
+                <p>Aqui está o resumo da sua E-Wallet.</p>
+            </div>
+        </header>
+        <section class="account-balance-section" id="account-list">
+            <div class="balance-card add-new" id="add-account-btn">
+                <i class="fas fa-plus-circle icon-plus"></i>
+                <h3>Adicionar Nova Conta</h3>
+            </div>
+        </section>
+        <section class="transactions-section">
+            <div class="transactions-header">
+                <h2>Transações</h2>
+                <div class="filter-group">
+                    <span>Filtrar por</span>
+                    <select name="transaction-type" id="transaction-filter">
+                        <option value="all">Todos</option>
+                        <option value="credit">Crédito</option>
+                        <option value="debit">Débito</option>
+                    </select>
+                </div>
+                <button id="add-transaction-btn" class="btn-primary">
+                    <i class="fas fa-plus"></i> Adicionar Transação
+                </button>
+            </div>
+            <div class="transactions-table-container">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Data</th>
+                            <th>Detalhes</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-list">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div id="modal-container" class="modal-hidden"> 
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal-btn">&times;</span>
+            <h2>Adicionar Nova Transação</h2>
+            <form id="transaction-form">
+                <div class="form-group">
+                    <label for="account-select">Conta</label>
+                    <select id="account-select" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-type">Tipo</label>
+                    <select id="transaction-type" required>
+                        <option value="credit">Crédito (Entrada)</option>
+                        <option value="debit">Débito (Saída)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-details">Detalhes</label>
+                    <input type="text" id="transaction-details" placeholder="Ex: Salário, Aluguel, Café" required>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-amount">Valor (R$)</label>
+                    <input type="number" id="transaction-amount" step="0.01" min="0.01" placeholder="0.00" required>
+                </div>
+                 <div class="form-group">
+                    <label for="transaction-date">Data</label>
+                    <input type="date" id="transaction-date" required>
+                </div>
+                <button type="submit" class="btn-primary">Salvar Transação</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. CONFIGURAÇÃO INICIAL ---
+            const username = sessionStorage.getItem('loggedInUser');
+            if (!username) { return; }
+
+            const dataKey = `eWalletData_${username}`; 
+            let appData = { accounts: [], transactions: [] }; 
+            let fullUserData = {}; 
+
+            // --- Seletores do DOM ---
+            const userNameEl = document.getElementById('user-name');
+            const accountListEl = document.getElementById('account-list');
+            const addAccountBtn = document.getElementById('add-account-btn');
+            const transactionListEl = document.getElementById('transaction-list');
+            const transactionFilterEl = document.getElementById('transaction-filter');
+            const logoutBtn = document.getElementById('logout-btn');
+            const modalContainer = document.getElementById('modal-container');
+            const addTransactionBtn = document.getElementById('add-transaction-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const transactionForm = document.getElementById('transaction-form');
+            const accountSelectEl = document.getElementById('account-select');
+            const transactionDateEl = document.getElementById('transaction-date');
+
+            // --- 2. FUNÇÕES DE DADOS ---
+            function loadData() {
+                const dataString = localStorage.getItem(dataKey);
+                
+                if (dataString) {
+                    fullUserData = JSON.parse(dataString);
+                    
+                    // **** AQUI ESTÁ A CORREÇÃO PARA O CAMPO "CONTA" ****
+                    if (fullUserData.accounts && fullUserData.accounts.length > 0) {
+                        appData.accounts = fullUserData.accounts;
+                    } else {
+                        // SE NÃO EXISTIR, CRIA UMA CONTA PADRÃO E SALVA
+                        console.warn('AVISO: Nenhuma conta encontrada. Criando "Conta Principal" padrão.');
+                        appData.accounts = [{ id: Date.now(), name: "Conta Principal" }];
+                        saveData(); 
+                    }
+                    
+                    appData.transactions = fullUserData.transactions || [];
+                    
+                } else {
+                    alert('Erro: Não foi possível carregar os dados da sua conta. Fazendo logout.');
+                    logout(); 
+                }
+            }
+
+            function saveData() {
+                fullUserData.accounts = appData.accounts;
+                fullUserData.transactions = appData.transactions;
+                localStorage.setItem(dataKey, JSON.stringify(fullUserData));
+            }
+
+            // --- 3. FUNÇÕES DE RENDERIZAÇÃO ---
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                }).format(value);
+            }
+
+            function renderDashboard() {
+                userNameEl.textContent = username.split('@')[0];
+                renderAccounts();
+                renderTransactions(transactionFilterEl.value);
+            }
+
+            function renderAccounts() {
+                accountListEl.querySelectorAll('.balance-card[data-account-id]').forEach(card => card.remove());
+                appData.accounts.forEach(account => {
+                    const balance = appData.transactions
+                        .filter(t => t.accountId === account.id)
+                        .reduce((sum, t) => {
+                            return t.type === 'credit' ? sum + t.amount : sum - t.amount;
+                        }, 0); 
+
+                    const cardHtml = `
+                        <div class="balance-card" data-account-id="${account.id}">
+                            <h3>${account.name}</h3>
+                            <p class="amount">${formatCurrency(balance)}</p>
+                        </div>
+                    `;
+                    addAccountBtn.insertAdjacentHTML('beforebegin', cardHtml);
+                });
+            }
+
+            function renderTransactions(filter = 'all') {
+                transactionListEl.innerHTML = '';
+                const filteredTransactions = appData.transactions
+                    .filter(t => filter === 'all' || t.type === filter)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date)); 
+
+                if (filteredTransactions.length === 0) {
+                    transactionListEl.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Nenhuma transação encontrada.</td></tr>';
+                    return;
+                }
+                filteredTransactions.forEach(t => {
+                    const tagClass = t.type === 'credit' ? 'credit' : 'debit';
+                    const sign = t.type === 'credit' ? '+' : '-';
+                    const rowHtml = `
+                        <tr>
+                            <td><span class="type-tag ${tagClass}">${t.type === 'credit' ? 'Crédito' : 'Débito'}</span></td>
+                            <td>${new Date(t.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
+                            <td>${t.details}</td>
+                            <td>${sign} ${formatCurrency(t.amount)}</td>
+                        </tr>
+                    `;
+                    transactionListEl.innerHTML += rowHtml;
+                });
+            }
+            
+            function populateAccountDropdown() {
+                accountSelectEl.innerHTML = ''; 
+                if (appData.accounts.length === 0) {
+                     accountSelectEl.innerHTML = '<option value="" disabled>Você precisa criar uma conta primeiro</option>';
+                     return;
+                }
+                appData.accounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account.id;
+                    option.textContent = account.name;
+                    accountSelectEl.appendChild(option);
+                });
+            }
+
+            // --- 4. FUNÇÕES DE AÇÃO ---
+            function addAccount() {
+                const accountName = prompt("Qual o nome da nova conta? (Ex: Cartão de Crédito, Investimentos)");
+                
+                if (accountName && accountName.trim() !== '') {
+                    const newAccount = {
+                        id: Date.now(), 
+                        name: accountName.trim()
+                    };
+                    appData.accounts.push(newAccount);
+                    saveData(); 
+                    renderAccounts();
+                }
+            }
+
+            function showModal() {
+                populateAccountDropdown(); 
+                transactionForm.reset(); 
+                transactionDateEl.value = new Date().toISOString().split('T')[0]; 
+                modalContainer.classList.remove('modal-hidden');
+            }
+
+            function hideModal() {
+                modalContainer.classList.add('modal-hidden');
+            }
+
+            function handleTransactionSubmit(event) {
+                event.preventDefault();
+                const accountId = parseInt(accountSelectEl.value, 10);
+                const type = document.getElementById('transaction-type').value;
+                const details = document.getElementById('transaction-details').value;
+                const amount = parseFloat(document.getElementById('transaction-amount').value);
+                const date = transactionDateEl.value;
+                
+                if (isNaN(accountId) || !details || amount <= 0 || !date) {
+                    alert("Por favor, preencha todos os campos corretamente.");
+                    return;
+                }
+                const newTransaction = {
+                    id: Date.now(),
+                    accountId: accountId,
+                    type: type,
+                    details: details,
+                    amount: amount,
+                    date: date
+                };
+                appData.transactions.push(newTransaction);
+                saveData(); 
+                renderDashboard(); 
+                hideModal();
+            }
+
+            function logout() {
+                sessionStorage.removeItem('isLoggedIn');
+                sessionStorage.removeItem('loggedInUser');
+                alert('Você foi desconectado.');
+                window.location.href = 'login.html';
+            }
+            
+            // --- 5. EVENT LISTENERS ---
+            transactionFilterEl.addEventListener('change', (e) => renderTransactions(e.target.value));
+            addAccountBtn.addEventListener('click', addAccount);
+            logoutBtn.addEventListener('click', logout);
+            addTransactionBtn.addEventListener('click', showModal);
+            closeModalBtn.addEventListener('click', hideModal);
+            transactionForm.addEventListener('submit', handleTransactionSubmit);
+            modalContainer.addEventListener('click', (event) => {
+                if (event.target === modalContainer) hideModal();
+            });
+            
+            // --- 6. INICIALIZAÇÃO ---
+            loadData();
+            renderDashboard(); 
+
+        });
+    </script>
+
+</body>
+</html>

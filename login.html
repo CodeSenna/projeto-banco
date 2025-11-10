@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style/style.css">
     <style>
         body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f9fafb; }
-        .form-container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 350px; }
+        .form-container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 90%; max-width: 350px; }
         .form-container h2 { text-align: center; margin-bottom: 20px; }
         .form-container form div { margin-bottom: 15px; }
         .form-container label { display: block; margin-bottom: 5px; font-weight: 500; }
@@ -28,7 +28,7 @@
                 <label for="password">Senha</label>
                 <input type="password" id="password" required>
             </div>
-            <button type="submit" href="index.html">Entrar</button> 
+            <button type="submit">Entrar</button> 
         </form>
         <p>Não tem uma conta? <a href="cadastro.html">Cadastre-se</a></p>
     </div>
@@ -40,33 +40,31 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Pega os dados do localStorage
-            const stringDoUsuario = localStorage.getItem('eWalletUser');
+            // 1. Procura pela chave de dados única
+            const dataKey = 'eWalletData_' + username;
+            const dataString = localStorage.getItem(dataKey);
             
-            // Se não existir usuário cadastrado
-            if (!stringDoUsuario) {
-                alert('Nenhum usuário cadastrado.');
+            if (!dataString) {
+                alert('Usuário não encontrado. Por favor, cadastre-se.');
                 return;
             }
 
-            // Converte a string de volta para objeto
-            const usuarioSalvo = JSON.parse(stringDoUsuario);
+            // 2. Converte os dados do usuário
+            const userData = JSON.parse(dataString);
 
-            // Verifica se o usuário e a senha batem
-            if (username === usuarioSalvo.username && password === usuarioSalvo.password) {
+            // 3. Verifica se a senha dentro do objeto bate
+            if (password === userData.login.password) {
                 
                 // SUCESSO!
-                // Aqui está o truque: usamos sessionStorage
-                // Isso "dura" enquanto a aba estiver aberta
                 sessionStorage.setItem('isLoggedIn', 'true');
-                sessionStorage.setItem('loggedInUser', username); // Para personalizar a dashboard
+                sessionStorage.setItem('loggedInUser', username); // Salva o email para o dashboard usar
                 
                 // Redireciona para a página protegida
                 window.location.href = 'dashboard.html';
 
             } else {
                 // FALHA!
-                alert('Usuário ou senha incorretos.');
+                alert('Senha incorreta.');
             }
         });
     </script>

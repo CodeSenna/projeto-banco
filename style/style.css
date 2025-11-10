@@ -55,26 +55,6 @@ ul {
 }
 
 /* ==================== Header / Navbar ==================== */
-/* ... (todo o seu código do .navbar, .logo, etc. fica aqui) ... */
-
-/* ADICIONE ESTAS NOVAS CLASSES AQUI */
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 30px; /* Espaço entre a <nav> e o <div class="nav-right"> */
-}
-
-.hamburger-btn {
-    display: none; /* Escondido no desktop */
-    background: none;
-    border: none;
-    font-size: 1.8rem; /* Tamanho do ícone */
-    color: #333; /* Cor do ícone */
-    cursor: pointer;
-    z-index: 1000; /* Garante que fique na frente */
-}
-
-/* ==================== Header / Navbar ==================== */
 .navbar {
     background-color: #fff;
     padding: 20px 0;
@@ -116,6 +96,24 @@ ul {
     color: #2500f9;
     margin-right: 5px;
 }
+
+/* --- Estilos do Menu Hambúrguer --- */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Espaço entre a <nav> e o <div class="nav-right"> */
+}
+
+.hamburger-btn {
+    display: none; /* Escondido no desktop */
+    background: none;
+    border: none;
+    font-size: 1.8rem; /* Tamanho do ícone */
+    color: #333; /* Cor do ícone */
+    cursor: pointer;
+    z-index: 1000; /* Garante que fique na frente */
+}
+
 
 /* ==================== Hero Section ==================== */
 .hero {
@@ -197,7 +195,6 @@ ul {
     color: #555;
 }
 
-/* Estilo do item Ativo */
 /* Estilo do item Ativo (Começa branco) */
 .feature-item.active {
     background-color: #fff; /* Fundo branco padrão */
@@ -230,17 +227,6 @@ ul {
 
 .feature-item:hover .icon-wrapper i {
     color: #2500f9; /* Ícone azul no hover */
-}
-
-/* Estilos Padrão (que já estavam lá, mas garantindo) */
-.feature-item .icon-wrapper i {
-    font-size: 1.3rem;
-    color: #2500f9;
-}
-
-.feature-item span {
-    font-weight: 500;
-    color: #555;
 }
 
 /* ==================== Seção "Sobre" (2 Colunas) ==================== */
@@ -334,7 +320,6 @@ ul {
     background-color: #f9fafb; /* Um cinza bem claro de fundo */
 }
 
-/* O container desta seção é modificado para ser flex e em coluna */
 .services-section .container {
     display: flex;
     flex-direction: column;
@@ -451,14 +436,12 @@ ul {
     background-color: #fff; /* Fundo branco */
 }
 
-/* O container desta seção também é flex e em coluna */
 .pricing-section .container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Reutilizando o .section-header que já definimos */
 .pricing-section .section-header {
     margin-bottom: 50px;
 }
@@ -599,7 +582,6 @@ ul {
     color: #fff; /* Texto da lista branco */
 }
 
-/* Ícones de check/times no card ativo */
 .pricing-card.active .features-list .fa-check {
     color: #00d285; /* Verde (mantém a cor) */
 }
@@ -614,12 +596,6 @@ ul {
     background-color: #0c0058; 
     color: #fff;
     padding: 70px 0;
-    
-    /* A imagem original tem um padrão sutil. 
-       Para replicar, você pode adicionar uma imagem de fundo:
-       background-image: url('sua-imagem-de-padrao.png');
-       background-repeat: repeat;
-    */
 }
 
 .newsletter-section .container {
@@ -657,8 +633,6 @@ ul {
 }
 
 .newsletter-form button {
-    /* Reutiliza .btn.btn-primary */
-    border-radius: 30px; /* Totalmente arredondado */
     border: none;
     cursor: pointer;
     font-size: 1rem;
@@ -667,35 +641,13 @@ ul {
     border-radius: 30px !important; 
 }
 
-.partner-logos {
-    display: flex;
-    flex-wrap: wrap; /* Permite que os logos quebrem a linha em telas menores */
-    justify-content: center;
-    align-items: center;
-    gap: 40px; /* Espaço entre os logos */
-    width: 100%;
-}
-
-.partner-logos img {
-    height: 25px; /* Altura fixa para todos os logos */
-    opacity: 0.6; /* Deixa os logos levemente transparentes */
-    transition: opacity 0.3s ease;
-}
-
-.partner-logos img:hover {
-    opacity: 1; /* Opacidade total no hover */
-}
-
 /* ==================== Rodapé Principal ==================== */
 .footer {
-    /* Mesmo azul principal do design */
     background-color: #2500f9; 
     color: #fff;
-    padding: 80px 0 0; /* Padding em cima, sem padding embaixo (o footer-bottom terá) */
+    padding: 80px 0 0; 
 }
 
-/* O container do rodapé é o padrão (flex com justify-between)
-   mas precisamos que ele seja 'column' para empilhar a grade e o copyright */
 .footer .container {
     flex-direction: column;
     align-items: stretch; /* Faz os filhos ocuparem a largura total */
@@ -703,7 +655,6 @@ ul {
 
 .footer-grid {
     display: grid;
-    /* 4 colunas, a primeira é um pouco maior */
     grid-template-columns: 1.5fr 1fr 1fr 1fr; 
     gap: 40px;
     width: 100%;
@@ -750,10 +701,6 @@ ul {
     font-weight: 600;
     margin-bottom: 25px;
     color: #fff;
-}
-
-.footer-col ul {
-    list-style: none;
 }
 
 .footer-col ul li {
@@ -806,12 +753,10 @@ ul {
 
 /* === Telas Médias (Tablets) === */
 @media (max-width: 992px) {
-    /* Reduz o container para telas médias */
     .container {
         max-width: 90%;
     }
 
-    /* --- Ajustes de Layout (Grids) --- */
     .about-section .container {
         grid-template-columns: 1fr; /* Coluna única */
         gap: 40px;
@@ -823,15 +768,14 @@ ul {
     
     .pricing-grid {
         grid-template-columns: 1fr; /* Coluna única (melhor para preços) */
-        max-width: 500px; /* Limita a largura do card de preço */
+        max-width: 500px; 
     }
     
     .footer-grid {
         grid-template-columns: 1fr 1fr; /* 2 colunas */
-        gap: 40px 20px; /* Espaço vertical e horizontal */
+        gap: 40px 20px; 
     }
 
-    /* --- Ajuste Hero --- */
     .hero {
         padding-left: 5%; /* Reduz o espaçamento */
     }
@@ -848,18 +792,9 @@ ul {
     .about-content h2 { font-size: 1.8rem; }
     .section-header h2 { font-size: 1.8rem; }
 
-
-/* === Telas Pequenas (Celulares) === */
-@media (max-width: 768px) {
-    
-    /* ... (seu código de fontes globais) ... */
-
-
-    /* SUBSTITUA O BLOCO ANTIGO DO NAVBAR POR ESTE */
     /* --- Navbar (Menu Hambúrguer) --- */
     .navbar .container {
         flex-wrap: wrap; 
-        /* Mantém o justify-content: space-between; do .container base */
     }
 
     .hamburger-btn {
@@ -869,17 +804,16 @@ ul {
     .nav-links {
         display: none; /* Esconde o menu por padrão */
         flex-direction: column;
-        width: 100%; /* Ocupa 100% da largura */
+        width: 100%; 
         align-items: flex-start;
         gap: 25px;
-        margin-top: 20px; /* Espaço do topo */
+        margin-top: 20px; 
         padding: 20px;
         background-color: #fff;
         border-radius: 10px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
     
-    /* Classe que o JS vai adicionar */
     .nav-links.active {
         display: flex; /* Mostra o menu */
     }
@@ -911,16 +845,15 @@ ul {
         text-align: center;
     }
 
-}
     /* --- Hero Section --- */
     .hero {
-        padding: 40px 20px 80px 20px; /* Padding vertical, centralizado */
-        height: auto; /* Altura automática */
+        padding: 40px 20px 80px 20px; 
+        height: auto; 
         text-align: center;
         justify-content: center;
     }
     .hero-content {
-        padding-left: 0; /* Reseta o padding */
+        padding-left: 0; 
         max-width: 100%;
     }
     .hero-content p {
@@ -928,18 +861,17 @@ ul {
         font-size: 1rem;
     }
 
-
     /* --- Features Bar --- */
     .features-bar {
-        transform: none; /* Remove o flutuamento */
+        transform: none; 
         margin: 30px 0;
-        padding: 0 15px; /* Adiciona padding lateral */
+        padding: 0 15px; 
     }
     .features-bar .container {
         grid-template-columns: 1fr 1fr; /* 2 colunas */
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     }
-    /* Remove bordas desnecessárias no layout 2x2 */
+    
     .feature-item {
         border-right: 1px solid #eee;
     }
@@ -957,14 +889,12 @@ ul {
     
     /* --- Seção "Sobre" --- */
     .about-image .image-buttons-container {
-        /* Simplifica os botões para não estourarem */
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
         left: 15px;
         bottom: 15px;
     }
-
 
     /* --- Seção Serviços --- */
     .services-grid {
@@ -973,7 +903,8 @@ ul {
 
     /* --- Seção Preços --- */
     .pricing-grid {
-        max-width: 100%; /* Ocupa 100% */
+        grid-template-columns: 1fr; /* CORRIGIDO: Estava faltando */
+        max-width: 100%; 
         padding: 0 10px;
     }
 
@@ -984,19 +915,18 @@ ul {
     .newsletter-form {
         flex-direction: column;
         gap: 15px;
-        padding: 0 20px; /* Padding para não colar nas bordas */
+        padding: 0 20px; 
         width: 100%;
     }
     .partner-logos {
-        /* Grade de 3 colunas para os logos */
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         gap: 30px;
         padding: 0 20px;
     }
     .partner-logos img {
-        height: 20px; /* Logos menores */
-        justify-self: center; /* Centraliza na grade */
+        height: 20px; 
+        justify-self: center; 
     }
 
     /* --- Rodapé --- */
@@ -1006,7 +936,6 @@ ul {
     .footer-grid {
         grid-template-columns: 1fr; /* 1 coluna */
         gap: 35px;
-        /* Centraliza o texto de todas as colunas */
         text-align: center;
     }
     .footer-col {
