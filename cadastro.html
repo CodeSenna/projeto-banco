@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - E-Wallet</title>
+    <link rel="stylesheet" href="style/style.css"> 
+    <style>
+        /* Estilos simples para centralizar */
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f9fafb; }
+        .form-container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 350px; }
+        .form-container h2 { text-align: center; margin-bottom: 20px; }
+        .form-container form div { margin-bottom: 15px; }
+        .form-container label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-container input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-container button { width: 100%; padding: 12px; border: none; border-radius: 20px; background-color: #2500f9; color: #fff; font-weight: bold; cursor: pointer; }
+        .form-container p { text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Criar Conta</h2>
+        <form id="register-form">
+            <div>
+                <label for="username">Usuário (E-mail)</label>
+                <input type="email" id="username" required>
+            </div>
+            <div>
+                <label for="password">Senha</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p>Já tem uma conta? <a href="login.html">Faça login</a></p>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio do formulário
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // CRIA o objeto do usuário
+            const user = {
+                username: username,
+                password: password // (LEMBRETE: NUNCA FAÇA ISSO EM PROJETOS REAIS!)
+            };
+
+            // Salva o usuário no localStorage
+            // Usamos JSON.stringify para converter o objeto em texto
+            localStorage.setItem('eWalletUser', JSON.stringify(user));
+
+            alert('Cadastro realizado com sucesso! Você será redirecionado para o login.');
+            
+            // Redireciona para o login
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
